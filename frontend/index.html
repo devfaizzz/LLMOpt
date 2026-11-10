@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CarbonPilot AI – Sustainable LLM Inference</title>
+  <meta name="description" content="AI-powered prompt optimization and carbon estimation for sustainable LLM usage. Reduce your AI carbon footprint with CarbonPilot." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+
+  <!-- Toast Container -->
+  <div id="toast-container"></div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo">
+        <div class="logo-icon-wrap">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        </div>
+        <span class="logo-text">LLM <span class="logo-ai">Opt</span></span>
+      </div>
+      <nav class="header-nav">
+        <span class="nav-badge">Beta</span>
+        <span class="nav-tag">🌿 Sustainable LLM Inference</span>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-eyebrow">AI-Powered Prompt Optimization</div>
+      <h1 class="hero-title">Smarter Prompts.<br/><span class="gradient-text">Greener AI.</span></h1>
+      <p class="hero-sub">Analyze your prompt, compress it, estimate CO₂ impact, and run it on the best model — all in one place.</p>
+      <div class="hero-stats">
+        <div class="h-stat"><div class="h-stat-val">5+</div><div class="h-stat-label">Free Models</div></div>
+        <div class="h-stat-divider"></div>
+        <div class="h-stat"><div class="h-stat-val">~40%</div><div class="h-stat-label">Avg Token Saving</div></div>
+        <div class="h-stat-divider"></div>
+        <div class="h-stat"><div class="h-stat-val">Real-time</div><div class="h-stat-label">Carbon Estimates</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main App -->
+  <main class="app-container">
+
+    <!-- Step 1: Input -->
+    <section class="card" id="section-input">
+      <div class="card-header">
+        <div class="step-badge">01</div>
+        <div>
+          <h2>Enter Your Prompt</h2>
+          <p class="card-sub">Paste any LLM prompt below to analyze its sustainability footprint</p>
+        </div>
+      </div>
+
+      <div class="textarea-wrapper">
+        <textarea id="prompt-input" class="prompt-textarea" placeholder="Paste your prompt here… e.g. Explain binary search with code, examples, edge cases, time complexity, interview tips and a real-life analogy in detail..." rows="6"></textarea>
+        <div class="textarea-toolbar">
+          <div class="input-meta">
+            <span id="char-count">0 chars</span>
+            <span class="meta-sep">•</span>
+            <span id="token-estimate">~0 tokens</span>
+          </div>
+          <button class="btn-ghost btn-sm" onclick="clearPrompt()" title="Clear">✕ Clear</button>
+        </div>
+      </div>
+
+      <div class="priority-row">
+        <label class="priority-label">Optimization Priority:</label>
+        <div class="priority-btns" id="priority-btns">
+          <button class="priority-btn active" data-value="balanced">⚖️ Balanced</button>
+          <button class="priority-btn" data-value="carbon">🌿 Min Carbon</button>
+          <button class="priority-btn" data-value="quality">✨ Max Quality</button>
+          <button class="priority-btn" data-value="cost">💰 Min Cost</button>
+        </div>
+      </div>
+
+      <button class="btn-primary" id="analyze-btn" onclick="analyzePrompt()">
+        <span id="analyze-btn-text">🔍 Analyze &amp; Optimize</span>
+        <span class="btn-spinner hidden" id="analyze-spinner"></span>
+      </button>
+    </section>
+
+    <!-- Step 2: Analysis Results -->
+    <section class="card hidden" id="section-analysis">
+      <div class="card-header">
+        <div class="step-badge">02</div>
+        <div>
+          <h2>Analysis Results</h2>
+          <p class="card-sub">Prompt issues detected, optimization applied &amp; sustainability measured</p>
+        </div>
+      </div>
+
+      <!-- Issues -->
+      <div class="issues-box" id="issues-box"></div>
+
+      <!-- Before / After Prompts -->
+      <div class="compare-grid">
+        <div class="compare-card original">
+          <div class="compare-header">
+            <div class="compare-label">📝 Original Prompt</div>
+            <button class="btn-copy" onclick="copyText('orig-prompt-text')" title="Copy">Copy</button>
+          </div>
+          <div class="compare-text" id="orig-prompt-text"></div>
+          <div class="compare-token-badge amber" id="orig-token-badge"></div>
+        </div>
+        <div class="compare-arrow-col">
+          <div class="compare-arrow">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </div>
+          <div class="compare-reduction" id="compare-reduction"></div>
+        </div>
+        <div class="compare-card optimized">
+          <div class="compare-header">
+            <div class="compare-label">✨ Optimized Prompt</div>
+            <button class="btn-copy" onclick="copyText('opt-prompt-text')" title="Copy">Copy</button>
+          </div>
+          <div class="compare-text" id="opt-prompt-text"></div>
+          <div class="compare-token-badge green" id="opt-token-badge"></div>
+        </div>
+      </div>
+
+      <!-- Similarity -->
+      <div class="similarity-row">
+        <span class="sim-label">Semantic Similarity</span>
+        <div class="sim-bar-wrap">
+          <div class="sim-bar" id="sim-bar"></div>
+        </div>
+        <span class="sim-value" id="sim-value"></span>
+      </div>
+
+      <!-- Metrics + Chart Row -->
+      <h3 class="section-sub">📊 Environmental Impact</h3>
+      <div class="impact-layout">
+        <div class="metrics-grid" id="metrics-grid"></div>
+        <div class="chart-wrap">
+          <canvas id="impact-chart" width="220" height="220"></canvas>
+          <div class="chart-label">Token Reduction</div>
+        </div>
+      </div>
+
+      <!-- Savings Banner -->
+      <div class="savings-banner" id="savings-banner"></div>
+    </section>
+
+    <!-- Step 3: Model Recommendation -->
+    <section class="card hidden" id="section-recommendation">
+      <div class="card-header">
+        <div class="step-badge">03</div>
+        <div>
+          <h2>Model Recommendation &amp; Multi-Model Proof</h2>
+          <p class="card-sub">AI-selected best model based on your priority &amp; task complexity, verified with public benchmarks</p>
+        </div>
+      </div>
+      <div class="rec-box" id="rec-box"></div>
+
+      <!-- Multi-Model Comparison Dashboard (Before vs After) -->
+      <div class="comparison-dashboard-section" id="comparison-dashboard-section">
+        <div class="dashboard-header-row">
+          <div>
+            <h3 class="section-sub" style="margin-top:1.5rem;margin-bottom:0.25rem;">📊 Multi-Model Footprint Comparison (Before vs After)</h3>
+            <p class="card-sub" style="margin-bottom:1rem;">Side-by-side environmental and token metrics before and after optimization across all models</p>
+          </div>
+          <div class="algorithm-badge">MCDA Multi-Factor Engine</div>
+        </div>
+        <div class="comparison-cards-grid" id="comparison-cards-grid"></div>
+      </div>
+
+      <!-- Cost & Environmental Estimation Basis Info Box -->
+      <div class="cost-basis-box" id="cost-basis-box">
+        <div class="cost-basis-title">
+          <span>💡</span> <strong>Cost &amp; Environmental Estimation Basis</strong>
+        </div>
+        <div class="cost-basis-grid" id="cost-basis-grid">
+          <div class="cost-basis-col">
+            <span class="cost-basis-tag">API Token Pricing</span>
+            <p>Calculated per 1M tokens: <code>(Tokens / 1,000,000) × Rate</code>. Free tier endpoints display ₹0.00 / $0.00. Commercial equivalents range from ~$0.05 to $0.50/1M tokens ($1 = ₹83.50).</p>
+          </div>
+          <div class="cost-basis-col">
+            <span class="cost-basis-tag">Energy &amp; CO₂ Basis</span>
+            <p>Derived from GPU tensor-core active parameters: <code>~0.3 µWh / token × Carbon Factor</code>. Grid emissions use 400g CO₂/kWh global average with 1.2 Datacenter PUE.</p>
+          </div>
+          <div class="cost-basis-col">
+            <span class="cost-basis-tag">Water Footprint Basis</span>
+            <p>Datacenter on-site and off-site cooling footprint calculated at <code>1.8 mL / Wh</code> of inference energy consumption.</p>
+          </div>
+        </div>
+      </div>
+
+      <h3 class="section-sub" style="margin-top:1.5rem">Select a Model to Run</h3>
+      <div class="model-selector" id="model-selector"></div>
+
+      <button class="btn-primary" id="run-btn" onclick="runPrompt()">
+        <span id="run-btn-text">🚀 Run Optimized Prompt</span>
+        <span class="btn-spinner hidden" id="run-spinner"></span>
+      </button>
+    </section>
+
+    <!-- Step 4: LLM Response -->
+    <section class="card hidden" id="section-response">
+      <div class="card-header">
+        <div class="step-badge">04</div>
+        <div>
+          <h2>LLM Response</h2>
+          <p class="card-sub" id="response-model-label">Response from selected model</p>
+        </div>
+        <button class="btn-copy" style="margin-left:auto" onclick="copyText('response-box')" title="Copy response">Copy</button>
+      </div>
+      <div class="response-meta" id="response-meta"></div>
+      <div class="response-box" id="response-box"></div>
+      <div class="response-metrics" id="response-metrics"></div>
+      <div style="display:flex;gap:.75rem;margin-top:1rem;flex-wrap:wrap;">
+        <button class="btn-secondary" onclick="resetAll()">🔄 Start Over</button>
+        <button class="btn-secondary" onclick="scrollToTop()">↑ Back to Top</button>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <span class="footer-logo">🌿 LLMOpt </span>
+      <span>Carbon estimates are approximate &amp; for educational purposes. Methodology based on GPU power research.</span>
+    </div>
+  </footer>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
